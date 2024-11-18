@@ -12,13 +12,14 @@ import jax.random as jrnd
 from jaxutils import Dataset
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from active_search import get_next_y, get_next_candidate_baseline, get_next_candidate, compute_distances
-from gp_model import update_model
-from search_no_gpjax import generate_true_function
-import search_no_gpjax
+from ..notebooks.active_search import get_next_y, get_next_candidate_baseline, get_next_candidate, compute_distances
+from .gp_model import update_model
+from ..notebooks.search_no_gpjax import generate_true_function
+from  ..notebooks import search_no_gpjax
 import matplotlib.cm as cm
 from matplotlib import rcParams
-from drew_nd import EIG_chaase_meanfield_multi
+from ..notebooks.energy_error.scripts.drew_nd import EIG_chaase_meanfield_multi
+# from .utils import EIG_chaase_meanfield_multi
 from scipy.spatial import ConvexHull
 import random
 import numpy as np

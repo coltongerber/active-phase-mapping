@@ -3,10 +3,9 @@ import jax.numpy as jnp
 import jax.random as jrnd
 import jax.scipy.stats as jsps
 import jax.scipy.linalg as spla
-from jax.config import config
 from jaxutils import Dataset
 
-config.update("jax_enable_x64", True)
+jax.config.update("jax_enable_x64", True)
 import numpy.random as npr
 import numpy as np
 from numpy import linalg
@@ -16,7 +15,7 @@ from itertools import product
 import random
 from copy import deepcopy
 
-from gp_model import update_model, make_preds
+from ...active_learning.gp_model import update_model, make_preds
 
 ###Coordinate functions
 def nD_coordinates(dimensions,start,stop,steps):

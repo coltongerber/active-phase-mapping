@@ -6,7 +6,7 @@ import jax.scipy.linalg as spla
 
 import gpjax as gpx
 from jax import grad, jit
-import jaxkern as jk
+from gpjax.kernels.stationary.rbf import RBF
 import optax as ox
 from jaxutils import Dataset
 
@@ -28,8 +28,8 @@ def update_model(dataset, design_space, rng_key, update_params=False, num_iters=
     """
 
     # Define model
-    prior = gpx.Prior(kernel = jk.RBF())
-    likelihood = gpx.Gaussian(num_datapoints = dataset.n)
+    prior = gpx.gps.Prior(mean_function=gpx.mean_functions.Zero(), kernel=RBF())
+    likelihood = gpx.likelihoods.Gaussian(num_datapoints = dataset.n)
     posterior = prior * likelihood
 
     if update_params:
