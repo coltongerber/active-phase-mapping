@@ -188,7 +188,7 @@ for seed in seeds:
 
         #Quantifying error.
         #Energy samples are min_curves.
-        hull_expected_energy, false_positive_rate, true_positive_rate, initial_entropy, hull_samples, energy_samples  =calc_expected_energy_or_entropy(
+        hull_expected_energy, false_positive_rate, true_positive_rate, initial_entropy, hull_samples, energy_samples, all_poly_samples  =calc_expected_energy_or_entropy(
         design_space=design_space, num_curves=num_curves, num_samples=num_samples, knot_N=knot_N, pts=pts, endpoint_indices=endpoint_indices,
         dimensions=dimensions, true_hull_classifications=true_classifications, poly_dict=poly_dict, multi=True, entropy_type=entropy_type)
 
