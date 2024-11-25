@@ -116,7 +116,10 @@ for seed in [144]:
         y_array=jnp.array(y_lst)[:,jnp.newaxis]
         y_mean=jnp.array(y_lst)[:,jnp.newaxis].mean()
         y_std=jnp.array(y_lst)[:,jnp.newaxis].std()
-        normalized_y =  y_array-y_mean #y_array - poly_dict[i]['mean']
+        if y_std == 0:
+            normalized_y =  (y_array-y_mean)
+        else:
+            normalized_y =  (y_array-y_mean) / y_std #y_array - poly_dict[i]['mean']
         poly_dict[i]['std'] = deepcopy(y_std)
         poly_dict[i]['mean'] = deepcopy(y_mean)
         poly_dict[i]['dataset'] = deepcopy(Dataset(X=jnp.array(x_lst), y=normalized_y))
@@ -216,10 +219,17 @@ for seed in [144]:
         next_x_ind = (design_space == next_x).sum(1).argmax()
         next_y=poly_dict[counter]['true_y'][next_x_ind] #unnormalized y
         #updating model with composition and y-value
-        y_array_unnormalized=poly_dict[counter]['dataset'].y+poly_dict[counter]['mean']
+        if poly_dict[counter]['std'] == 0:
+            y_array_unnormalized=poly_dict[counter]['dataset'].y +poly_dict[counter]['mean']
+        else:
+            y_array_unnormalized=poly_dict[counter]['dataset'].y * poly_dict[counter]['std'] +poly_dict[counter]['mean']
         y_array_unnormalized=jnp.append(y_array_unnormalized, next_y)
         poly_dict[counter]['mean']=y_array_unnormalized.mean()
-        normalized_y = (y_array_unnormalized - poly_dict[counter]['mean'])#(y_array - poly_dict[i]['mean'])/poly_dict[i]['std']
+        poly_dict[counter]['std']=y_array_unnormalized.std()
+        if poly_dict[counter]['std'] == 0:
+            normalized_y = (y_array_unnormalized - poly_dict[counter]['mean'])
+        else:
+            normalized_y = (y_array_unnormalized - poly_dict[counter]['mean']) / poly_dict[counter]['std']#(y_array - poly_dict[i]['mean'])/poly_dict[i]['std']
         x_data=jnp.vstack([poly_dict[counter]['dataset'].X,next_x])#[:, jnp.newaxis]
 
         poly_dict[counter]['dataset'] = Dataset(X=x_data, y=normalized_y[:, jnp.newaxis])
