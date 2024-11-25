@@ -145,8 +145,15 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     #Set endpoints to zero.
     lin_comb=get_lin_comb(pts,endpoint_indices,min_curve)
     Y_zeroed=min_curve-lin_comb
-    #Determining vertices of hull
-    true_e_hull=lin_comb + get_hull_energies(design_space,Y_zeroed,endpoint_indices=endpoint_indices, dimensions=dimensions)
+    
+    # If nothing is negative, there will only be two points passed to QHull,
+    # and it will fail. Do not use QHull in this case.
+    if (np.delete(Y_zeroed, endpoint_indices) < 0).sum() == 0:
+        true_e_hull = lin_comb
+    else:
+        #Determining vertices of hull
+        true_e_hull=lin_comb + get_hull_energies(design_space,Y_zeroed,endpoint_indices=endpoint_indices, dimensions=dimensions)
+        
     tol=1e-3
     vertices=(min_curve-true_e_hull)<tol
     true_classifications=jnp.zeros(knot_N).at[vertices].set(1)
