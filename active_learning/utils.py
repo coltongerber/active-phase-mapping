@@ -19,6 +19,8 @@ import pickle
 from gp_model import update_model, make_preds
 from itertools import product
 
+import ipdb
+
 ###Coordinate functions
 def nD_coordinates(dimensions,start,stop,steps):
     '''
