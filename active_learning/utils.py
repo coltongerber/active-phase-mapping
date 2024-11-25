@@ -266,7 +266,8 @@ def sample_from_posterior(pred_mean, pred_cov, design_space, T,envelopes=False):
     pred_Y = pred_cK.T @ npr.randn(N_designs, T) + pred_mean[:, jnp.newaxis]
     # get s by computing the vector of tights w.r.t. posterior samples
     if envelopes:
-        envelopes = convelope(design_space, pred_Y.T)
+        # TODO: Import correct version of below function. Commented out to avoid linter complaints.
+        # envelopes = convelope(design_space, pred_Y.T)
         return pred_Y, pred_cK, envelopes
     else:
         return pred_Y, pred_cK
