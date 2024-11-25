@@ -220,7 +220,10 @@ def calc_expected_energy_or_entropy(poly_dict=None, design_space=None, num_curve
     #calculating entropy
     hull_samples=np.vstack(hull_samples)
     total_entropy=get_total_entropy(hull_samples,entropy_type)
-    return avg_pred, false_positive_rate, true_positive_rate, total_entropy, hull_samples, samples
+    if multi:
+        return avg_pred, false_positive_rate, true_positive_rate, total_entropy, hull_samples, samples, all_poly_samples
+    else:
+        return avg_pred, false_positive_rate, true_positive_rate, total_entropy, hull_samples, samples
 
 from numpy.linalg import det, slogdet
 def get_total_entropy(hull_samples, entropy_type):
