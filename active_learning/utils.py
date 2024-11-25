@@ -115,7 +115,9 @@ def get_hull_energies(design_space,Y,endpoint_indices,dimensions):
     if dimensions>2:
         ###1
         #Building hull from non-positive vals.
-        points=np.column_stack((design_space,Y))[Y<=0]
+        # Cast Y as np array. If it is a jax array, it will upset the
+        # Boolean filter and points will be filtered down to an empty array.
+        points=np.column_stack((design_space,Y))[np.array(Y)<=0]
         hull=ConvexHull(points)
         new_eqns=reconfigure_eqns_nd(hull.equations)
     ###2
