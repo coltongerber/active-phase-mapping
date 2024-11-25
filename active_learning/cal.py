@@ -66,11 +66,10 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     if truth_df:
         # For using G as true_y
         prism_df = pd.read_json(truth_df, orient="records", lines=True)
-        pts = np.array(prism_df["reduced_point"].to_list())        # prism_df["coarse"] = prism_df["point"].apply(lambda x: np.isclose(np.array(x) * 4 % 1, np.zeros(len(x))).all())
         # prism_df = prism_df[prism_df["coarse"]]
         # pts = np.array(prism_df["point"].to_list())
-        prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0)]
-        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"]/2, x["Pb"]/2, x["Sn"]/2], axis=1)
+        prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0) & (prism_df["S"] == 1.0)]
+        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["Pb"], x["Sn"]], axis=1)
         pts = np.array(prism_df["reduced_point"].to_list())
     else:
         pts=nD_coordinates(dimensions,0,1,n_grid)
@@ -85,7 +84,9 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     for i in range(num_polymorphs):
         #Generating energy  surfaces
         if truth_df:
-            poly_dict[i]['true_y'] = prism_df["G_leveled_meV_atom"].to_numpy() # / 600
+            y = prism_df["G_leveled_meV_atom"].to_numpy()
+            lin_comb=get_lin_comb(pts,endpoint_indices, y)
+            poly_dict[i]['true_y'] = y - lin_comb
         else:
             poly_dict[i]['true_y'] = generate_true_function(design_space, knot_N) + alpha[i]*i
 
