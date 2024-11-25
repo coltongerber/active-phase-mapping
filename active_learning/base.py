@@ -57,7 +57,7 @@ for seed in seeds:
     #set seed
     npr.seed(seed); rng_key = jrnd.PRNGKey(seed)
     #Search space
-    n_grid, dimensions, num_polymorphs = (11, 3, 3)
+    n_grid, dimensions, num_polymorphs = (11, 2, 1)
     num_curves=args.num_curves
     num_samples=args.num_samples
     num_y = args.num_y
