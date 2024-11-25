@@ -112,7 +112,7 @@ for seed in [144]:
         if y_std == 0:
             normalized_y =  (y_array-y_mean)
         else:
-            normalized_y =  (y_array-y_mean) / y_std #y_array - poly_dict[i]['mean']
+            normalized_y =  (y_array-y_mean) / y_std
         poly_dict[i]['std'] = deepcopy(y_std)
         poly_dict[i]['mean'] = deepcopy(y_mean)
         poly_dict[i]['dataset'] = deepcopy(Dataset(X=jnp.array(x_lst), y=normalized_y))
