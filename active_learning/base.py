@@ -50,7 +50,8 @@ seeds=np.array([ 0, 10, 11, 12, 15, 16, 17, 20, 21, 22, 25, 26, 27, 30, 31, 35, 
 # for seed in seeds:
 for seed in [144]:
     #set seed
-    npr.seed(seed); rng_key = jrnd.PRNGKey(seed)
+    npr.seed(seed)
+    rng_key = jrnd.PRNGKey(seed)
     #Search space
     n_grid, dimensions, num_polymorphs = (11, 2, 1)
     num_curves=args.num_curves
