@@ -40,6 +40,7 @@ parser.add_argument('-cores', type=int, help='number of cores')
 parser.add_argument('-nodes', type=int,help='number of nodes')
 parser.add_argument('-num_comps', type=int, help='number of compositions considered for next design')
 parser.add_argument('-directory', type=str, help='path to results directory')
+parser.add_argument('-truth_df', type=str, help="path to DataFrame JSON containing true y-data")
 parser.add_argument('-method', type=str, help='Type of Baseline search method')
 parser.add_argument('-seed_range', type=int, nargs="+", help='Seed Range')
 args = parser.parse_args()
@@ -61,6 +62,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     num_y = args.num_y
     entropy_type = args.entropy_type
     method=args.method
+    truth_df = args.truth_df
 
     poly_dict={}
     for i in range(num_polymorphs):
@@ -69,7 +71,18 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         'dataset':[]})
 
     #Producing grid
-    pts=nD_coordinates(dimensions,0,1,n_grid)
+    if truth_df:
+        # For using G as true_y
+        prism_df = pd.read_json(truth_df, orient="records", lines=True)
+        pts = np.array(prism_df["reduced_point"].to_list())        # prism_df["coarse"] = prism_df["point"].apply(lambda x: np.isclose(np.array(x) * 4 % 1, np.zeros(len(x))).all())
+        # prism_df = prism_df[prism_df["coarse"]]
+        # pts = np.array(prism_df["point"].to_list())
+        prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0)]
+        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"]/2, x["Pb"]/2, x["Sn"]/2], axis=1)
+        pts = np.array(prism_df["reduced_point"].to_list())
+    else:
+        pts=nD_coordinates(dimensions,0,1,n_grid)
+
     design_space=np.array(pts)[:,:dimensions-1]
     endpoint_indices = get_endpoint_indices(dimensions,pts)
     #removing endpoint indices from list of candidates.
@@ -80,7 +93,11 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     alpha=[0,0.25,0.5]
     for i in range(num_polymorphs):
         #Generating energy  surfaces
-        poly_dict[i]['true_y'] = generate_true_function(design_space, knot_N) + alpha[i]*i
+        if truth_df:
+            poly_dict[i]['true_y'] = prism_df["G_leveled_meV_atom"].to_numpy() # / 600
+        else:
+            poly_dict[i]['true_y'] = generate_true_function(design_space, knot_N) + alpha[i]*i
+
         #poly_dict[i]['std'], poly_dict[i]['mean'] = poly_dict[i]['true_y'].std(), poly_dict[i]['true_y'].mean()
         #plt.plot(np.ravel(design_space),poly_dict[i]['true_y'])
         #plt.show()
@@ -94,6 +111,19 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         for endpoint_index in endpoint_indices:
             x_lst.append(design_space[endpoint_index])
             y_lst.append(poly_dict[i]['true_y'][endpoint_index])
+
+        # For using G as true_y
+        if truth_df:
+            pts_list = pts.tolist()
+            mask = np.array([x.count(0.5) for x in pts_list]) == 2
+            design_space_endpoints = np.array(pts_list)[mask].tolist()
+            design_space_endpoint_indices = []
+            for endpoint in design_space_endpoints:
+                design_space_endpoint_indices.append(pts_list.index(endpoint))
+            for endpoint_index in design_space_endpoint_indices:
+                x_lst.append(design_space[endpoint_index])
+                y_lst.append(poly_dict[i]['true_y'][endpoint_index])
+                
         y_array=jnp.array(y_lst)[:,jnp.newaxis]
         y_mean=jnp.array(y_lst)[:,jnp.newaxis].mean()
         y_std=jnp.array(y_lst)[:,jnp.newaxis].std()
