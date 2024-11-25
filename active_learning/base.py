@@ -220,16 +220,16 @@ for seed in [144]:
         next_y=poly_dict[counter]['true_y'][next_x_ind] #unnormalized y
         #updating model with composition and y-value
         if poly_dict[counter]['std'] == 0:
-            y_array_unnormalized=poly_dict[counter]['dataset'].y +poly_dict[counter]['mean']
+            y_array_unnormalized=poly_dict[counter]['dataset'].y + poly_dict[counter]['mean']
         else:
-            y_array_unnormalized=poly_dict[counter]['dataset'].y * poly_dict[counter]['std'] +poly_dict[counter]['mean']
+            y_array_unnormalized=poly_dict[counter]['dataset'].y * poly_dict[counter]['std'] + poly_dict[counter]['mean']
         y_array_unnormalized=jnp.append(y_array_unnormalized, next_y)
         poly_dict[counter]['mean']=y_array_unnormalized.mean()
         poly_dict[counter]['std']=y_array_unnormalized.std()
         if poly_dict[counter]['std'] == 0:
             normalized_y = (y_array_unnormalized - poly_dict[counter]['mean'])
         else:
-            normalized_y = (y_array_unnormalized - poly_dict[counter]['mean']) / poly_dict[counter]['std']#(y_array - poly_dict[i]['mean'])/poly_dict[i]['std']
+            normalized_y = (y_array_unnormalized - poly_dict[counter]['mean']) / poly_dict[counter]['std']
         x_data=jnp.vstack([poly_dict[counter]['dataset'].X,next_x])#[:, jnp.newaxis]
 
         poly_dict[counter]['dataset'] = Dataset(X=x_data, y=normalized_y[:, jnp.newaxis])
