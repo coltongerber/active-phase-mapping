@@ -53,7 +53,8 @@ seeds=np.array([ 0, 10, 11, 12, 15, 16, 17, 20, 21, 22, 25, 26, 27, 30, 31, 35, 
        37, 40, 41, 42, 45, 46, 47, 50, 60, 61, 62, 65, 66, 67, 70, 71, 72,
        75, 76, 77, 80, 81, 82, 85, 86, 87])
 
-for seed in seeds:
+# for seed in seeds:
+for seed in [144]:
     #set seed
     npr.seed(seed); rng_key = jrnd.PRNGKey(seed)
     #Search space
