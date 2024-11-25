@@ -26,6 +26,8 @@ from gp_model import update_model, make_preds
 from base_policy import get_next_y, get_next_candidate_baseline
 from generate_function import generate_true_function
 
+import ipdb
+
 parser = argparse.ArgumentParser(description="Search parameters.")
 parser.add_argument("-num_y", type=int, help="Number of y-points sampled per composition")
 parser.add_argument("-num_samples", type=int, help="Number of samples per entropy calculation")
