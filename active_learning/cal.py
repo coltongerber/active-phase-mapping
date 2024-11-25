@@ -104,17 +104,19 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
             x_lst.append(design_space[endpoint_index])
             y_lst.append(poly_dict[i]['true_y'][endpoint_index])
 
-        # For using G as true_y
-        if truth_df:
-            pts_list = pts.tolist()
-            mask = np.array([x.count(0.5) for x in pts_list]) == 2
-            design_space_endpoints = np.array(pts_list)[mask].tolist()
-            design_space_endpoint_indices = []
-            for endpoint in design_space_endpoints:
-                design_space_endpoint_indices.append(pts_list.index(endpoint))
-            for endpoint_index in design_space_endpoint_indices:
-                x_lst.append(design_space[endpoint_index])
-                y_lst.append(poly_dict[i]['true_y'][endpoint_index])
+        # For using G as true_y with pure compounds as simplex endpoints.
+        # This will add the endpoints of the pseudobinary space of interest to 
+        # the initial set of points.
+        # if truth_df:
+        #     pts_list = pts.tolist()
+        #     mask = np.array([x.count(0.5) for x in pts_list]) == 2
+        #     design_space_endpoints = np.array(pts_list)[mask].tolist()
+        #     design_space_endpoint_indices = []
+        #     for endpoint in design_space_endpoints:
+        #         design_space_endpoint_indices.append(pts_list.index(endpoint))
+        #     for endpoint_index in design_space_endpoint_indices:
+        #         x_lst.append(design_space[endpoint_index])
+        #         y_lst.append(poly_dict[i]['true_y'][endpoint_index])
                 
         y_array=jnp.array(y_lst)[:,jnp.newaxis]
         y_mean=jnp.array(y_lst)[:,jnp.newaxis].mean()
