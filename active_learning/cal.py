@@ -35,6 +35,7 @@ parser = argparse.ArgumentParser(description="Search parameters.")
 parser.add_argument("-num_y", type=int, help="Number of y-points sampled per composition")
 parser.add_argument("-num_samples", type=int, help="Number of samples per entropy calculation")
 parser.add_argument("-num_curves", type=int, help="Number of combinations of samples per entropy calculation")
+parser.add_argument("-num_iter", type=int, help="Number of iterations to perform")
 parser.add_argument('-entropy_type', type=str, help='Type of entropy calculation')
 parser.add_argument('-cores', type=int, help='number of cores')
 parser.add_argument('-nodes', type=int,help='number of nodes')
@@ -62,6 +63,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     num_y = args.num_y
     entropy_type = args.entropy_type
     method=args.method
+    iterations = args.num_iter
     truth_df = args.truth_df
 
     poly_dict={}
@@ -88,7 +90,6 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     #removing endpoint indices from list of candidates.
     designs = [x for index,x in enumerate(design_space) if index not in endpoint_indices]
     knot_N = len(design_space)
-    iterations = 150
     print(knot_N)
     alpha=[0,0.25,0.5]
     for i in range(num_polymorphs):
