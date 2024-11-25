@@ -1,35 +1,24 @@
 import numpy.random as npr
 import numpy as np
 import pandas as pd
-from scipy.spatial import ConvexHull
 from tqdm import tqdm
 from copy import deepcopy
-import matplotlib.pyplot as plt
-##import ternary
-from matplotlib import rcParams
-import matplotlib.cm as cm
-from glob import iglob
 from time import time
 import argparse
-from copy import deepcopy
-import seaborn as sns
-from mpi4py import MPI
 from os import system
 
 #JAX
-import jax
 import jax.numpy as jnp
 import jax.random as jrnd
 from jaxutils import Dataset
 
 # Imports from our code base
-from utils import *
-from gp_model import update_model, make_preds
-from base_policy import get_next_y, get_next_candidate_baseline
+from utils import calc_expected_energy_or_entropy, save_pickle, nD_coordinates, get_endpoint_indices, get_lin_comb, get_hull_energies
+from gp_model import update_model
 from generate_function import generate_true_function
 from mpi import do_parallel
 
-import ipdb
+import ipdb # noqa F401
 
 parser = argparse.ArgumentParser(description="Search parameters.")
 parser.add_argument("-num_y", type=int, help="Number of y-points sampled per composition")
