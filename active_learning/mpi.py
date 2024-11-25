@@ -55,15 +55,25 @@ num_polymorphs=None, dimensions=None, true_classifications=None, entropy_type=No
     print(f'Starting at entry {start} and ending at {end-1}')
 
     #for a given composition
-    for composition in designs[start:end]:
-        EIG=EIG_chaase_meanfield_multi(
-        composition=composition, dataset=dataset, seed=seed, index_dict=index_dict,  
-        pred_mean=pred_mean, pred_cov=pred_cov, design_space=design_space, 
-        num_y=num_y, initial_entropy=initial_entropy, pts=pts, endpoint_indices=endpoint_indices, 
-        knot_N=knot_N, num_curves=num_curves, num_samples=num_samples, poly_dict=poly_dict, 
-        polymorph_index=polymorph_index, num_polymorphs=num_polymorphs, dimensions=dimensions, 
-        true_classifications=true_classifications, entropy_type=entropy_type)
-        data_dict[float(EIG)] = composition
+    if num_polymorphs == 1:
+        for composition in designs[start:end]:
+            EIG=EIG_chaase_meanfield(
+                composition=composition, dataset=dataset, seed=seed, index_dict=index_dict,
+                pred_mean=pred_mean, pred_cov=pred_cov, design_space=design_space,
+                num_y=num_y, initial_entropy=initial_entropy, pts=pts, endpoint_indices=endpoint_indices,
+                knot_N=knot_N, num_samples=num_samples, dimensions=dimensions,
+                true_classifications=true_classifications, entropy_type=entropy_type)
+            data_dict[float(EIG)] = composition
+    else:
+        for composition in designs[start:end]:
+            EIG=EIG_chaase_meanfield_multi(
+                composition=composition, dataset=dataset, seed=seed, index_dict=index_dict,  
+                pred_mean=pred_mean, pred_cov=pred_cov, design_space=design_space, 
+                num_y=num_y, initial_entropy=initial_entropy, pts=pts, endpoint_indices=endpoint_indices, 
+                knot_N=knot_N, num_curves=num_curves, num_samples=num_samples, poly_dict=poly_dict, 
+                polymorph_index=polymorph_index, num_polymorphs=num_polymorphs, dimensions=dimensions, 
+                true_classifications=true_classifications, entropy_type=entropy_type)
+            data_dict[float(EIG)] = composition
 
     master_dict=comm.gather(data_dict, root=0)
     master_dict = comm.bcast(master_dict, root = 0)
