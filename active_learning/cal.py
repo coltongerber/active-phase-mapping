@@ -44,7 +44,8 @@ dfs=[]
 
 for seed in range(args.seed_range[0],args.seed_range[1]):
     #set seed
-    npr.seed(seed); rng_key = jrnd.PRNGKey(seed)
+    npr.seed(seed)
+    rng_key = jrnd.PRNGKey(seed)
     #Search space
     n_grid, dimensions, num_polymorphs = (11, 3, 1)
     num_curves=args.num_curves
