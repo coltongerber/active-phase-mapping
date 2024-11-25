@@ -63,6 +63,7 @@ for seed in seeds:
     num_y = args.num_y
     entropy_type = args.entropy_type
     method=args.method
+    truth_df = args.truth_df
 
     poly_dict={}
     for i in range(num_polymorphs):
