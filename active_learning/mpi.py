@@ -18,7 +18,7 @@ from search_no_gpjax import generate_true_function
 import search_no_gpjax
 import matplotlib.cm as cm
 from matplotlib import rcParams
-from drew_nd import EIG_chaase_meanfield_multi
+from utils import EIG_chaase_meanfield, EIG_chaase_meanfield_multi
 from scipy.spatial import ConvexHull
 import random
 import numpy as np
