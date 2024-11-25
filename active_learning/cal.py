@@ -128,7 +128,10 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         y_array=jnp.array(y_lst)[:,jnp.newaxis]
         y_mean=jnp.array(y_lst)[:,jnp.newaxis].mean()
         y_std=jnp.array(y_lst)[:,jnp.newaxis].std()
-        normalized_y =  y_array-y_mean #y_array - poly_dict[i]['mean']
+        if y_std == 0:
+            normalized_y =  (y_array-y_mean)
+        else:
+            normalized_y =  (y_array-y_mean) / y_std 
         poly_dict[i]['std'] = deepcopy(y_std)
         poly_dict[i]['mean'] = deepcopy(y_mean)
         poly_dict[i]['dataset'] = deepcopy(Dataset(X=jnp.array(x_lst), y=normalized_y))
@@ -152,7 +155,6 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     #Set endpoints to zero.
     lin_comb=get_lin_comb(pts,endpoint_indices,min_curve)
     Y_zeroed=min_curve-lin_comb
-
     #Determining vertices of hull
     true_e_hull=lin_comb + get_hull_energies(design_space,Y_zeroed,endpoint_indices=endpoint_indices, dimensions=dimensions)
     tol=1e-3
@@ -247,10 +249,17 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
 
 
         #updating model with composition and y-value
-        y_array_unnormalized=poly_dict[max_polymorph]['dataset'].y+poly_dict[max_polymorph]['mean']
+        if poly_dict[max_polymorph]['std'] == 0:
+            y_array_unnormalized=poly_dict[max_polymorph]['dataset'].y + poly_dict[max_polymorph]['mean']
+        else:
+            y_array_unnormalized=poly_dict[max_polymorph]['dataset'].y * poly_dict[max_polymorph]['std'] + poly_dict[max_polymorph]['mean']
         y_array_unnormalized=jnp.append(y_array_unnormalized, next_y)
         poly_dict[max_polymorph]['mean']=y_array_unnormalized.mean()
-        normalized_y = (y_array_unnormalized - poly_dict[max_polymorph]['mean'])#(y_array - poly_dict[i]['mean'])/poly_dict[i]['std']
+        poly_dict[max_polymorph]['std']=y_array_unnormalized.std()
+        if poly_dict[max_polymorph]['std'] == 0:
+            normalized_y = (y_array_unnormalized - poly_dict[max_polymorph]['mean'])
+        else:
+            normalized_y = (y_array_unnormalized - poly_dict[max_polymorph]['mean']) / poly_dict[max_polymorph]['std']
         x_data=jnp.vstack([poly_dict[max_polymorph]['dataset'].X,next_x])#[:, jnp.newaxis]
         poly_dict[max_polymorph]['dataset'] = Dataset(X=x_data, y=normalized_y[:, jnp.newaxis])
         poly_dict[max_polymorph]['pred_mean'], poly_dict[max_polymorph]['pred_cov'], poly_dict[max_polymorph]['posterior'], poly_dict[max_polymorph]['params'] = update_model(poly_dict[max_polymorph]['dataset'], design_space, rng_key, update_params=False)
