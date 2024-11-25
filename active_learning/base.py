@@ -36,6 +36,7 @@ parser.add_argument('-nodes', type=int,help='number of nodes')
 parser.add_argument('-num_comps', type=int, help='number of compositions considered for next design')
 parser.add_argument('-directory', type=str, help='path to results directory')
 parser.add_argument('-method', type=str, help='Type of Baseline search method')
+parser.add_argument('-truth_df', type=str, help="path to DataFrame JSON containing true y-data")
 args = parser.parse_args()
 
 
@@ -70,7 +71,15 @@ for seed in seeds:
         'dataset':[]})
 
     #Producing grid
-    pts=nD_coordinates(dimensions,0,1,n_grid)
+    if truth_df:
+        prism_df = pd.read_json(truth_df, orient="records", lines=True)
+        prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0) & (prism_df["S"] == 1.0)]
+        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["Pb"], x["Sn"]], axis=1)
+        # prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Sn"] == 1.0) & (prism_df["Pb"] == 0.0)]
+        # prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"], x["Te"]], axis=1)
+        pts = np.array(prism_df["reduced_point"].to_list())
+    else:
+        pts=nD_coordinates(dimensions,0,1,n_grid)
     design_space=np.array(pts)[:,:dimensions-1]
     endpoint_indices = get_endpoint_indices(dimensions,pts)
     #removing endpoint indices from list of candidates.
@@ -81,7 +90,12 @@ for seed in seeds:
     alpha=[0,0.25,0.5]
     for i in range(num_polymorphs):
         #Generating energy  surfaces
-        poly_dict[i]['true_y'] = generate_true_function(design_space, knot_N) + alpha[i]*i
+        if truth_df:
+            y = prism_df["G_leveled_meV_atom"].to_numpy()
+            lin_comb=get_lin_comb(pts,endpoint_indices, y)
+            poly_dict[i]['true_y'] = y - lin_comb
+        else:
+            poly_dict[i]['true_y'] = generate_true_function(design_space, knot_N) + alpha[i]*i
         #poly_dict[i]['std'], poly_dict[i]['mean'] = poly_dict[i]['true_y'].std(), poly_dict[i]['true_y'].mean()
         #plt.plot(np.ravel(design_space),poly_dict[i]['true_y'])
         #plt.show()
