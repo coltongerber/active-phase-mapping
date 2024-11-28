@@ -75,7 +75,6 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         pts=nD_coordinates(dimensions,0,1,n_grid)
 
     design_space=np.array(pts)[:,:dimensions-1]
-    ipdb.set_trace()
 
     endpoint_indices = get_endpoint_indices(dimensions,pts)
     #removing endpoint indices from list of candidates.
