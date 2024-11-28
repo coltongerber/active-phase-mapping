@@ -133,11 +133,8 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         poly_dict[i]['dataset'], design_space, rng_key, update_params=False) # Update the model given the data above
     index_dict={}
     for index,x in enumerate(design_space):
-        if dimensions>2:
-            comp_tuple=tuple([float(i) for i in x])
-            index_dict[comp_tuple]=index
-        else:
-            index_dict[float(x)]=index #for 1D
+        comp_tuple=tuple([float(i) for i in x])
+        index_dict[comp_tuple]=index
     ###Determining true_hull
     #Producing min_curve
     all_true_curves=[]
