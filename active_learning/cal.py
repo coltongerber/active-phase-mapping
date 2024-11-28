@@ -66,16 +66,17 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     if truth_df:
         # For using G as true_y
         prism_df = pd.read_json(truth_df, orient="records", lines=True)
-        # prism_df = prism_df[prism_df["coarse"]]
-        # pts = np.array(prism_df["point"].to_list())
-        prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0) & (prism_df["S"] == 1.0)]
-        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["Pb"], x["Sn"]], axis=1)
+        # prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0) & (prism_df["S"] == 1.0)]
+        # prism_df["reduced_point"] = prism_df.apply(lambda x: [x["Pb"], x["Sn"]], axis=1)
+        prism_df = prism_df[(prism_df["S"] != 2.0) & (prism_df["Se"] != 2.0) & (prism_df["Te"] != 2.0) & (prism_df["Pb"] != 2.0) & (prism_df["Sn"] != 2.0)]
+        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"], x["Se"], x["Pb"], x["Sn"]], axis=1)
         pts = np.array(prism_df["reduced_point"].to_list())
     else:
         pts=nD_coordinates(dimensions,0,1,n_grid)
 
     design_space=np.array(pts)[:,:dimensions-1]
     endpoint_indices = get_endpoint_indices(dimensions,pts)
+    ipdb.set_trace()
     #removing endpoint indices from list of candidates.
     designs = [x for index,x in enumerate(design_space) if index not in endpoint_indices]
     knot_N = len(design_space)
