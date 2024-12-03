@@ -47,7 +47,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
     npr.seed(seed)
     rng_key = jrnd.PRNGKey(seed)
     #Search space
-    n_grid, dimensions, num_polymorphs = (11, 4, 1)
+    n_grid, dimensions, num_polymorphs = (11, 5, 1)
     num_curves=args.num_curves
     num_samples=args.num_samples
     num_y = args.num_y
@@ -69,7 +69,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         # prism_df = prism_df[(prism_df["Se"] == 0.0) & (prism_df["Te"] == 0.0) & (prism_df["S"] == 1.0)]
         # prism_df["reduced_point"] = prism_df.apply(lambda x: [x["Pb"], x["Sn"]], axis=1)
         prism_df = prism_df[(prism_df["S"] != 2.0) & (prism_df["Se"] != 2.0) & (prism_df["Te"] != 2.0) & (prism_df["Pb"] != 2.0) & (prism_df["Sn"] != 2.0)]
-        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"], x["Se"], x["Pb"], x["Sn"]], axis=1)
+        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"], x["Se"], x["Te"], x["Pb"], x["Sn"]], axis=1)
         pts = np.array(prism_df["reduced_point"].to_list())
     else:
         pts=nD_coordinates(dimensions,0,1,n_grid)
