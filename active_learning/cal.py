@@ -67,7 +67,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         # For using G as true_y
         prism_df = pd.read_json(truth_df, orient="records", lines=True)
         # prism_df = prism_df[(prism_df["S"] != 2.0) & (prism_df["Se"] != 2.0) & (prism_df["Te"] != 2.0) & (prism_df["Pb"] != 2.0) & (prism_df["Sn"] != 2.0)]
-        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"]/2, x["Se"]/2, x["Te"]/2, x["Pb"]/2, x["Sn"]]/2, axis=1)
+        prism_df["reduced_point"] = prism_df.apply(lambda x: [x["S"]/2, x["Se"]/2, x["Te"]/2, x["Pb"]/2, x["Sn"]/2], axis=1)
         pts = np.array(prism_df["reduced_point"].to_list())
     else:
         pts=nD_coordinates(dimensions,0,1,n_grid)
