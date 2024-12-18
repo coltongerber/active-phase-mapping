@@ -89,7 +89,12 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
             raise ValueError(f"Last iteration in dataset ({last_it}) does not match last iteration in performance file ({df_last_it})")
         iter_range = range(last_it + 1, iterations)
         
-        true_e_hull = master_problem_setup_dict[seed]['True E_Hull']        
+        true_e_hull = master_problem_setup_dict[seed]['True E_Hull']
+        index_dict={}
+        for index,x in enumerate(design_space):
+            comp_tuple=tuple([float(i) for i in x])
+            index_dict[comp_tuple]=index
+            
     else: # start new run
         poly_dict={}
         for i in range(num_polymorphs):
