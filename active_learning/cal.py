@@ -62,7 +62,8 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         master_energy_dict = pd.read_pickle(f'{args.directory}/energy.pkl')
         master_dataset_dict = pd.read_pickle(f'{args.directory}/observation.pkl')
         master_problem_setup_dict = pd.read_pickle(f'{args.directory}/problem_setup.pkl')
-        poly_dict = master_dataset_dict[seed][-1]
+        last_it = list(master_dataset_dict[seed].keys())[-1]
+        poly_dict = master_dataset_dict[seed][last_it]
         pts = poly_dict[0]['true_y_dict'].keys()
         design_space = np.array(pts)[:,:dimensions-1]
         knot_N = len(design_space)
@@ -82,7 +83,9 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         its = df['iteration'].to_list()
         dfs.append(df)
         
-        last_it = its[-1]
+        df_last_it = its[-1]
+        if last_it != df_last_it:
+            raise ValueError(f"Last iteration in dataset ({last_it}) does not match last iteration in performance file ({df_last_it})")
         iter_range = range(last_it + 1, iterations)
         
     else: # start new run
