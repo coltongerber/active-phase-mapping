@@ -302,7 +302,8 @@ design_space, num_y, initial_entropy, pts, endpoint_indices, knot_N, num_samples
         tmp_dataset=deepcopy(dataset)
         tmp_dataset = tmp_dataset + Dataset(X=jnp.atleast_2d(composition), y=jnp.atleast_2d(y_0)) #updating dataset with new value
         #Update the model given new y-value.
-        npr.seed(seed); rng_key = jrnd.PRNGKey(seed)
+        npr.seed(seed)
+        rng_key = jrnd.PRNGKey(seed)
         pred_mean, pred_cov, posterior, params = update_model(tmp_dataset, design_space, rng_key, update_params=False) #update the model.
         #Calculate the resulting entropy
         avg_e_pred, _, _, entropy, hull_samples, energy_samples=calc_expected_energy_or_entropy(pts=pts,endpoint_indices=endpoint_indices,knot_N=knot_N,pred_mean=pred_mean,pred_cov=pred_cov,
@@ -330,7 +331,8 @@ design_space, num_y, initial_entropy, pts, endpoint_indices, knot_N, num_curves,
         #Make copy of dataset and add y-value.
         tmp_poly_dict[polymorph_index]['dataset'] = dataset + Dataset(X=jnp.atleast_2d(composition), y=jnp.atleast_2d(y_0)) #updating dataset with new value
         #Update the model given new y-value.
-        npr.seed(seed); rng_key = jrnd.PRNGKey(seed)
+        npr.seed(seed)
+        rng_key = jrnd.PRNGKey(seed)
         tmp_poly_dict[polymorph_index]['pred_mean'], tmp_poly_dict[polymorph_index]['pred_cov'], tmp_poly_dict[polymorph_index]['posterior'], tmp_poly_dict[polymorph_index]['params'] = update_model(tmp_poly_dict[polymorph_index]['dataset'], design_space, rng_key, update_params=False) #update the model.
         #Calculate the resulting entropy
         hull_expected_energy, _, _, entropy, hull_samples, energy_samples= calc_expected_energy_or_entropy(poly_dict=tmp_poly_dict, design_space=design_space,
