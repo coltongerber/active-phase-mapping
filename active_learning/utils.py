@@ -205,7 +205,7 @@ def calc_expected_energy_or_entropy(poly_dict=None, design_space=None, num_curve
             E_hull=get_hull_energies(design_space,Y_zeroed,endpoint_indices=endpoint_indices, dimensions=dimensions) + lin_comb
             vertices=Y-E_hull<tol
             classifications=jnp.zeros(knot_N).at[vertices].set(1)
-        except:
+        except: # noqa E722. Presumably this is for when QHull fails? TODO: Should be more specific. 
             E_hull=lin_comb
             classifications=jnp.zeros(knot_N).at[np.array(endpoint_indices)].set(1)
 
@@ -214,10 +214,10 @@ def calc_expected_energy_or_entropy(poly_dict=None, design_space=None, num_curve
         fpr+=false_positive_rate
         tpr+=true_positive_rate
         hull_samples.append(E_hull)
-
+    
     avg_pred=avg_pred/num_samples #vector of length knot_N
-    tpr=tpr/num_samples
-    fpr=fpr/num_samples
+    tpr=tpr/num_samples # never used, as raw true_positive_rate is returned
+    fpr=fpr/num_samples # never used, as raw false_positive_rate is returned
 
     #calculating entropy
     hull_samples=np.vstack(hull_samples)

@@ -138,7 +138,7 @@ for seed in [144]:
     Y_zeroed=min_curve-lin_comb
 
     # If nothing is negative, there will only be two points passed to QHull,
-    # and it will fail. 
+    # and it will fail. Do not use QHull in this case.
     if (np.delete(Y_zeroed, endpoint_indices) < 0).sum() == 0:
         true_e_hull = lin_comb
     else:
