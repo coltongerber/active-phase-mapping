@@ -1,28 +1,8 @@
 ### Adapted from Mines HPC workshop Fall 2022 led by Nicholas Danes
-import sys
 from mpi4py import MPI
-import os
 import time
-from numpy import array
-import pickle
-import numpy.random as npr
-import jax
-import jax.numpy as jnp
-import jax.random as jrnd
-from jaxutils import Dataset
-from tqdm import tqdm
-import matplotlib.pyplot as plt
-from active_search import get_next_y, get_next_candidate_baseline, get_next_candidate, compute_distances
-from gp_model import update_model
-from search_no_gpjax import generate_true_function
-import search_no_gpjax
-import matplotlib.cm as cm
-from matplotlib import rcParams
 from utils import EIG_chaase_meanfield, EIG_chaase_meanfield_multi
-from scipy.spatial import ConvexHull
-import random
 import numpy as np
-from copy import deepcopy
 
 t0 = time.time()
 comm = MPI.COMM_WORLD
@@ -50,8 +30,6 @@ num_polymorphs=None, dimensions=None, true_classifications=None, entropy_type=No
 
     # Actually do the computations on each item in assigned section of designs
     data_dict = {}
-    #i = 0
-    lst=[]
     print(f'Starting at entry {start} and ending at {end-1}')
 
     #for a given composition

@@ -1,25 +1,24 @@
-import jax
 import jax.numpy as jnp
 import jax.random as jrnd
-import jax.scipy.stats as jsps
 import jax.scipy.linalg as spla
 from jax.config import config
 from jaxutils import Dataset
 
-config.update("jax_enable_x64", True)
-import numpy.random as npr
-import numpy as np
-from numpy import linalg
-from scipy.spatial import ConvexHull
-from scipy.stats import differential_entropy
-from itertools import product
-import random
-from copy import deepcopy
-import pickle
-from gp_model import update_model, make_preds
-from itertools import product
+config.update("jax_enable_x64", True) # TODO: Does this need to be here? Or can it be below the other imports?
+import numpy.random as npr # noqa E402
+import numpy as np # noqa E402
+from numpy import linalg # noqa E402
+from scipy.spatial import ConvexHull # noqa E402
+from scipy.stats import differential_entropy # noqa E402
+from itertools import product # noqa E402
+import random # noqa E402
+from copy import deepcopy # noqa E402
+import pickle # noqa E402
+from gp_model import update_model, make_preds # noqa E402
+from itertools import product # noqa E402
+from numpy.linalg import slogdet # noqa E402
 
-import ipdb
+import ipdb # noqa E402
 
 ###Coordinate functions
 def nD_coordinates(dimensions,start,stop,steps):
@@ -227,7 +226,6 @@ def calc_expected_energy_or_entropy(poly_dict=None, design_space=None, num_curve
     else:
         return avg_pred, false_positive_rate, true_positive_rate, total_entropy, hull_samples, samples
 
-from numpy.linalg import det, slogdet
 def get_total_entropy(hull_samples, entropy_type):
     '''
     Inputs:
