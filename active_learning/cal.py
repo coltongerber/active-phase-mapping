@@ -64,7 +64,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         master_problem_setup_dict = pd.read_pickle(f'{args.directory}/problem_setup.pkl')
         last_it = list(master_dataset_dict[seed].keys())[-1]
         poly_dict = master_dataset_dict[seed][last_it]
-        pts = poly_dict[0]['true_y_dict'].keys()
+        pts = np.array(list(poly_dict[0]['true_y_dict'].keys()))
         design_space = np.array(pts)[:,:dimensions-1]
         knot_N = len(design_space)
         endpoint_indices = get_endpoint_indices(dimensions,pts)
