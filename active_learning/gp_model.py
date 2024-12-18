@@ -1,14 +1,8 @@
-import jax
 import jax.numpy as jnp
-import jax.random as jrnd
-import jax.scipy.stats as jsps
-import jax.scipy.linalg as spla
-
 import gpjax as gpx
-from jax import grad, jit
+from jax import jit
 import jaxkern as jk
 import optax as ox
-from jaxutils import Dataset
 
 
 def make_preds(dataset, posterior, params, test_x, verbose=False):
