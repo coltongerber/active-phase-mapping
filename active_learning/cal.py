@@ -64,9 +64,10 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         master_problem_setup_dict = pd.read_pickle(f'{args.directory}/problem_setup.pkl')
         last_it = list(master_dataset_dict[seed].keys())[-1]
         poly_dict = master_dataset_dict[seed][last_it]
-        pts = np.array(list(poly_dict[0]['true_y_dict'].keys()))
-        design_space = np.array(pts)[:,:dimensions-1]
+        design_space = np.array(list(poly_dict[0]['true_y_dict'].keys()))
         knot_N = len(design_space)
+        fifth_D = 1 - design_space.sum(1)
+        pts = np.column_stack([design_space, fifth_D])
         endpoint_indices = get_endpoint_indices(dimensions,pts)
         true_classifications = master_problem_setup_dict[seed]['True Hull Classifications']
         hull_dict={}
