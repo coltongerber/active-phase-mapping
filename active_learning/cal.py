@@ -240,10 +240,12 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
         print("Iteration: ", it)
         initial_time=time()
 
+        random_design_space_indices = npr.choice(range(len(design_space)), args.num_comps, replace=False)
+        random_design_subspace = design_space[random_design_space_indices]
         #Quantifying error.
         #Energy samples are min_curves.
         hull_expected_energy, false_positive_rate, true_positive_rate, initial_entropy, hull_samples, energy_samples, all_poly_samples  =calc_expected_energy_or_entropy(
-        design_space=design_space, num_curves=num_curves, num_samples=num_samples, knot_N=knot_N, pts=pts, endpoint_indices=endpoint_indices,
+        design_space=random_design_subspace, num_curves=num_curves, num_samples=num_samples, knot_N=knot_N, pts=pts, endpoint_indices=endpoint_indices,
         dimensions=dimensions, true_hull_classifications=true_classifications, poly_dict=poly_dict, multi=True, entropy_type=entropy_type)
         
         hull_dict[it]=hull_samples
@@ -265,7 +267,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
             dict_list=do_parallel(
             designs=poly_dict[i]['designs'], dataset=poly_dict[i]['dataset'], seed=seed, index_dict=index_dict,
             pred_mean=poly_dict[i]['pred_mean'], pred_cov=poly_dict[i]['pred_cov'],
-            design_space=design_space, num_y=num_y, initial_entropy=initial_entropy, pts=pts, endpoint_indices=endpoint_indices,
+            design_space=random_design_subspace, num_y=num_y, initial_entropy=initial_entropy, pts=pts, endpoint_indices=endpoint_indices,
             knot_N=knot_N, num_curves=num_curves, num_samples=num_samples, poly_dict=poly_dict, polymorph_index=i, num_polymorphs=num_polymorphs,
             dimensions=dimensions, true_classifications=true_classifications, entropy_type=entropy_type)
             for x in dict_list:
@@ -298,7 +300,7 @@ for seed in range(args.seed_range[0],args.seed_range[1]):
             normalized_y = (y_array_unnormalized - poly_dict[max_polymorph]['mean']) / poly_dict[max_polymorph]['std']
         x_data=jnp.vstack([poly_dict[max_polymorph]['dataset'].X,next_x])#[:, jnp.newaxis]
         poly_dict[max_polymorph]['dataset'] = Dataset(X=x_data, y=normalized_y[:, jnp.newaxis])
-        poly_dict[max_polymorph]['pred_mean'], poly_dict[max_polymorph]['pred_cov'], poly_dict[max_polymorph]['posterior'], poly_dict[max_polymorph]['params'] = update_model(poly_dict[max_polymorph]['dataset'], design_space, rng_key, update_params=False)
+        poly_dict[max_polymorph]['pred_mean'], poly_dict[max_polymorph]['pred_cov'], poly_dict[max_polymorph]['posterior'], poly_dict[max_polymorph]['params'] = update_model(poly_dict[max_polymorph]['dataset'], random_design_subspace, rng_key, update_params=False)
         poly_dict[max_polymorph]['designs'] = jnp.delete(jnp.array(poly_dict[max_polymorph]['designs']), (jnp.array(poly_dict[max_polymorph]['designs']) == next_x).sum(1).argmax(), axis=0)
 
         duration=time()-initial_time
