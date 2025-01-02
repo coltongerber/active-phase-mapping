@@ -20,6 +20,13 @@ pip install gpjax
 
 The active learning algorithms are in the active_learning directory.
 All data generated in the performance testing can be found in the performance_test directory. 
+cal.py  -- General active learning procedure used in the paper. 
+base.py -- Baseline active learning procedure--not hull aware. 
+utils.py -- Lots of miscellaneous functions.
+gp_model.py -- script detailing Gaussian Process regression model used in both policies. 
+base_policy.py -- functions used in implementing active learning for baseline policy.
+mpi.py -- Cal is written to be parallelized across cores using mpi. mpi.py provides function for parallelization of EIG calculation.
+fps.py -- script for farthest point sampling.
 
 ## Running code
 The main code is in '''cal.py''' and can be run as a module, passing arguments using options. If using SLURM on an HPC to run on multiple cores in parallel, '''srun''' can be used as follows:
