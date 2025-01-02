@@ -20,3 +20,9 @@ pip install gpjax
 
 The active learning algorithms are in the active_learning directory.
 All data generated in the performance testing can be found in the performance_test directory. 
+
+## Running code
+The main code is in '''cal.py''' and can be run as a module, passing arguments using options. If using SLURM on an HPC to run on multiple cores in parallel, '''srun''' can be used as follows:
+```
+srun python cal.py -num_y 10 -num_samples 200 -num_curves 200 -entropy_type joint -cores 6 -nodes 1 -directory ../data/ternary -method CHAASE
+```
