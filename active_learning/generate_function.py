@@ -1,17 +1,19 @@
 import jax
 import jax.numpy as jnp
-import jax.random as jrnd
-import jax.scipy.stats as jsps
 import jax.scipy.linalg as spla
 from jax.config import config
-config.update("jax_enable_x64", True)
 import numpy.random as npr
+
+
+config.update("jax_enable_x64", True)
+
 
 def kernel_rbf(x1, x2):
     """
     Squared expoential kernel with lengthscale ls.
     """
-    ls=0.1; v=1
+    ls=0.1
+    v=1
     #ls = params["lengthscale"]; v = params["variance"]
     return v * jnp.exp(-0.5 * jnp.linalg.norm(x1-x2) ** 2 / ls ** 2)
 
@@ -28,8 +30,8 @@ def K(kernel, xs, ys):
 def generate_true_function(design_space, knot_N): # todo: pass kernel as argument
 
     # TODO: make it such that we can pass in a dimension too? or just stick to 1d vs 2d.
-    knot_x = jnp.linspace(0, 1, knot_N)
-
+    
+    # knot_x = jnp.linspace(0, 1, knot_N) # Was assigned but never used, commented until understand if needed.
     knot_K = K(kernel_rbf, design_space, design_space) + 1e-8 * jnp.eye(knot_N)
     # Cholesky decomposition of the kernel matrix
     knot_cK = spla.cholesky(knot_K)

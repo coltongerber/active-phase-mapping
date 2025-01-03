@@ -1,20 +1,9 @@
-import jax
 import jax.numpy as jnp
-import jax.random as jrnd
-import jax.scipy.stats as jsps
-import jax.scipy.linalg as spla
 from jax.config import config
+from gp_model import make_preds
+
+
 config.update("jax_enable_x64", True)
-
-import gpjax as gpx
-from jax import grad, jit
-import jaxkern as jk
-import optax as ox
-from jaxutils import Dataset
-
-from gp_model import make_preds, update_model
-from utils import sample_from_posterior
-
 
 def get_next_y(true_y, design_space, next_x):
     return true_y[:,jnp.newaxis][design_space == next_x]
