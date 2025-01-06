@@ -12,10 +12,11 @@ def kernel_rbf(x1, x2):
     """
     Squared expoential kernel with lengthscale ls.
     """
-    ls=0.1
-    v=1
-    #ls = params["lengthscale"]; v = params["variance"]
-    return v * jnp.exp(-0.5 * jnp.linalg.norm(x1-x2) ** 2 / ls ** 2)
+    ls = 0.1
+    v = 1
+    # ls = params["lengthscale"]; v = params["variance"]
+    return v * jnp.exp(-0.5 * jnp.linalg.norm(x1 - x2) ** 2 / ls**2)
+
 
 def K(kernel, xs, ys):
     """
@@ -27,10 +28,10 @@ def K(kernel, xs, ys):
     """
     return jax.vmap(lambda x: jax.vmap(lambda y: kernel(x, y))(ys))(xs)
 
-def generate_true_function(design_space, knot_N): # todo: pass kernel as argument
 
+def generate_true_function(design_space, knot_N):  # todo: pass kernel as argument
     # TODO: make it such that we can pass in a dimension too? or just stick to 1d vs 2d.
-    
+
     # knot_x = jnp.linspace(0, 1, knot_N) # Was assigned but never used, commented until understand if needed.
     knot_K = K(kernel_rbf, design_space, design_space) + 1e-8 * jnp.eye(knot_N)
     # Cholesky decomposition of the kernel matrix

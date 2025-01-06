@@ -6,9 +6,8 @@ import optax as ox
 
 
 def make_preds(dataset, posterior, params, test_x, verbose=False):
-
     latent_distribution = posterior(params, dataset)(test_x)
-    likelihood = gpx.Gaussian(num_datapoints = dataset.n)
+    likelihood = gpx.Gaussian(num_datapoints=dataset.n)
     predictive_distribution = likelihood(params, latent_distribution)
 
     pred_mean = predictive_distribution.mean()
@@ -16,14 +15,23 @@ def make_preds(dataset, posterior, params, test_x, verbose=False):
 
     return pred_mean, pred_cov
 
-def update_model(dataset, design_space, rng_key, update_params=False, num_iters=500, lr=1e-3, init_params=None):
+
+def update_model(
+    dataset,
+    design_space,
+    rng_key,
+    update_params=False,
+    num_iters=500,
+    lr=1e-3,
+    init_params=None,
+):
     """
     Updates the model or uses default hyperparameters. Assumes zero mean function.
     """
 
     # Define model
-    prior = gpx.Prior(kernel = jk.RBF())
-    likelihood = gpx.Gaussian(num_datapoints = dataset.n)
+    prior = gpx.Prior(kernel=jk.RBF())
+    likelihood = gpx.Gaussian(num_datapoints=dataset.n)
     posterior = prior * likelihood
 
     if update_params:
@@ -35,11 +43,14 @@ def update_model(dataset, design_space, rng_key, update_params=False, num_iters=
     else:
         # Use default parameters
         if init_params is None:
-            parameter_state = gpx.initialise(posterior, key=rng_key,
-                                             kernel={"lengthscale": jnp.array([0.2]), "variance": jnp.array([1])},
-                                        likelihood={'obs_noise': jnp.array([0.0])})
+            parameter_state = gpx.initialise(
+                posterior,
+                key=rng_key,
+                kernel={"lengthscale": jnp.array([0.2]), "variance": jnp.array([1])},
+                likelihood={"obs_noise": jnp.array([0.0])},
+            )
         else:
-            pass # TODO: make it possible to pass in initial parameters for the kernel
+            pass  # TODO: make it possible to pass in initial parameters for the kernel
 
     params = parameter_state.params
     pred_mean, pred_cov = make_preds(dataset, posterior, params, design_space)
