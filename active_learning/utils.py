@@ -214,7 +214,7 @@ def calc_expected_energy_or_entropy(
     entropy_type=None,
 ):
     if multi:
-        all_poly_samples = multi_GP_sample(poly_dict, design_space, num_curves)
+        all_poly_samples = multi_GP_sample(poly_dict, num_curves)
         for i in range(len(poly_dict)):
             all_poly_samples[i] += poly_dict[i]["mean"]
         samples = sample_min_curves(
@@ -516,7 +516,7 @@ def random_sample(design_space):
     return random.choice(design_space)
 
 
-def multi_GP_sample(poly_dict, design_space, num_curves):
+def multi_GP_sample(poly_dict, num_curves):
     """
     Produces a dictionary with P polymorphs (as keys).
     For each polymorph there are N samples.
@@ -528,7 +528,7 @@ def multi_GP_sample(poly_dict, design_space, num_curves):
         samples, _ = sample_from_posterior(
             poly_dict[i]["pred_mean"],
             poly_dict[i]["pred_cov"],
-            design_space,
+            poly_dict[i]["selected_design_space"],
             num_curves,
             envelopes=False,
         )

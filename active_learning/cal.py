@@ -85,11 +85,9 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         )
         last_it = list(master_dataset_dict[seed].keys())[-1]
         poly_dict = master_dataset_dict[seed][last_it]
-        design_space = np.array(list(poly_dict[0]["true_y_dict"].keys()))
-        knot_N = len(design_space)
-        fifth_D = 1 - design_space.sum(1)
-        pts = np.column_stack([design_space, fifth_D])
-        endpoint_indices = get_endpoint_indices(dimensions, pts)
+        pts = poly_dict[0]["pts"]
+        design_space = poly_dict[0]["design_space"]
+        endpoint_indices = poly_dict[0]["endpoint_indices"]
         true_classifications = master_problem_setup_dict[seed][
             "True Hull Classifications"
         ]
@@ -160,9 +158,18 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
 
         endpoint_indices = get_endpoint_indices(dimensions, pts)
         # removing endpoint indices from list of candidates.
-        designs = [
-            x for index, x in enumerate(design_space) if index not in endpoint_indices
+        sampled_design_space_indices = deepcopy(endpoint_indices)
+        all_design_indices = [
+            index for index in enumerate(design_space) if index not in endpoint_indices
         ]
+        all_designs = design_space[all_design_indices]
+        
+        random_design_space_indices = npr.choice(
+            all_design_indices, args.num_comps, replace=False
+        )
+        random_designs = design_space[random_design_space_indices]
+        endpoints = design_space[endpoint_indices]
+        
         knot_N = len(design_space)
         print(knot_N)
         alpha = [0, 0.25, 0.5]
@@ -217,14 +224,22 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
             poly_dict[i]["dataset"] = deepcopy(
                 Dataset(X=jnp.array(x_lst), y=normalized_y)
             )
-            poly_dict[i]["designs"] = deepcopy(designs)
+            poly_dict[i]["pts"] = deepcopy(pts)
+            poly_dict[i]["design_space"] = deepcopy(design_space)
+            poly_dict[i]["remaining_design_choices"] = deepcopy(all_designs)
+            poly_dict[i]["endpoint_indices"] = deepcopy(endpoint_indices)
+            poly_dict[i]["random_designs"] = deepcopy(random_designs)
+            poly_dict[i]["selected_design_space"] = np.vstack([endpoints, random_designs])
             (
                 poly_dict[i]["pred_mean"],
                 poly_dict[i]["pred_cov"],
                 poly_dict[i]["posterior"],
                 poly_dict[i]["params"],
             ) = update_model(
-                poly_dict[i]["dataset"], design_space, rng_key, update_params=False
+                poly_dict[i]["dataset"],
+                poly_dict[i]["selected_design_space"],
+                rng_key, 
+                update_params=False
             )  # Update the model given the data above
         index_dict = {}
         for index, x in enumerate(design_space):
@@ -301,10 +316,6 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         print("Iteration: ", it)
         initial_time = time()
 
-        random_design_space_indices = npr.choice(
-            range(len(design_space)), args.num_comps, replace=False
-        )
-        random_design_subspace = design_space[random_design_space_indices]
         # Quantifying error.
         # Energy samples are min_curves.
         (
@@ -316,7 +327,7 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
             energy_samples,
             all_poly_samples,
         ) = calc_expected_energy_or_entropy(
-            design_space=random_design_subspace,
+            design_space=design_space,
             num_curves=num_curves,
             num_samples=num_samples,
             knot_N=knot_N,
@@ -345,13 +356,13 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
             # data_dict[i]
             dict_single_poly = {}
             dict_list = do_parallel(
-                designs=poly_dict[i]["designs"],
+                designs=poly_dict[i]["random_designs"],
                 dataset=poly_dict[i]["dataset"],
                 seed=seed,
                 index_dict=index_dict,
                 pred_mean=poly_dict[i]["pred_mean"],
                 pred_cov=poly_dict[i]["pred_cov"],
-                design_space=random_design_subspace,
+                design_space=poly_dict[i]["selected_design_space"],
                 num_y=num_y,
                 initial_entropy=initial_entropy,
                 pts=pts,
@@ -405,6 +416,25 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         poly_dict[max_polymorph]["dataset"] = Dataset(
             X=x_data, y=normalized_y[:, jnp.newaxis]
         )
+        
+        # Update design space and select new one
+        poly_dict[max_polymorph]["remaining_design_choices"] = jnp.delete(
+            jnp.array(poly_dict[max_polymorph]["remaining_design_choices"]),
+            (jnp.array(poly_dict[max_polymorph]["remaining_design_choices"]) == next_x).sum(1).argmax(),
+            axis=0,
+        )
+        
+        random_design_space_indices = npr.choice(
+            poly_dict[max_polymorph]["remaining_design_choices"], 
+            args.num_comps, 
+            replace=False
+        )
+        
+        random_designs = design_space[random_design_space_indices]
+        poly_dict[max_polymorph]["random_designs"] = random_designs
+        poly_dict[max_polymorph]["selected_design_space"] = np.vstack([endpoints, random_designs])
+
+        # Update model for next iteration
         (
             poly_dict[max_polymorph]["pred_mean"],
             poly_dict[max_polymorph]["pred_cov"],
@@ -412,20 +442,16 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
             poly_dict[max_polymorph]["params"],
         ) = update_model(
             poly_dict[max_polymorph]["dataset"],
-            random_design_subspace,
+            poly_dict[max_polymorph]["selected_design_space"],
             rng_key,
             update_params=False,
         )
-        poly_dict[max_polymorph]["designs"] = jnp.delete(
-            jnp.array(poly_dict[max_polymorph]["designs"]),
-            (jnp.array(poly_dict[max_polymorph]["designs"]) == next_x).sum(1).argmax(),
-            axis=0,
-        )
 
+        # Save results
         duration = time() - initial_time
         its.append(it)
         iteration_times.append(duration)
-        # Saving results
+
         df = pd.DataFrame()
 
         df["energy_error_means"] = energy_error_means
