@@ -93,9 +93,9 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         true_classifications = master_problem_setup_dict[seed][
             "True Hull Classifications"
         ]
-        hull_dict = {}
-        energy_dict = {}
-        dataset_dict = {}
+        hull_dict = master_hull_dict[seed]
+        energy_dict = master_energy_dict[seed]
+        dataset_dict = master_dataset_dict[seed]
         df = pd.read_csv(f"{args.directory}/performance_seed_{seed}.csv")
 
         energy_error_means = df["energy_error_means"].to_list()
