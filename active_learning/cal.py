@@ -160,7 +160,7 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         # removing endpoint indices from list of candidates.
         sampled_design_space_indices = deepcopy(endpoint_indices)
         all_design_indices = [
-            index for index in enumerate(design_space) if index not in endpoint_indices
+            index for index, x in enumerate(design_space) if index not in endpoint_indices
         ]
         all_designs = design_space[all_design_indices]
         
