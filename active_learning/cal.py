@@ -26,6 +26,11 @@ from generate_function import generate_true_function
 from mpi import do_parallel
 
 import ipdb  # noqa F401
+import cProfile
+from mpi4py import MPI
+import os
+
+cal_comm = MPI.COMM_WORLD
 
 parser = argparse.ArgumentParser(description="Search parameters.")
 parser.add_argument(
@@ -63,6 +68,8 @@ master_problem_setup_dict = {}
 dfs = []
 
 for seed in range(args.seed_range[0], args.seed_range[1]):
+    setup_profiler = cProfile.Profile()
+    setup_profiler.enable()
     # set seed
     npr.seed(seed)
     rng_key = jrnd.PRNGKey(seed)
@@ -314,7 +321,14 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         master_problem_setup_dict[seed] = problem_setup_dict
         iter_range = range(iterations)
 
+    setup_profiler.disable()
+    profiling_dir = "profiling"
+    os.mkdir(profiling_dir)
+    filename_r = f"{profiling_dir}/setup_stats.{cal_comm.rank}"
+    setup_profiler.dump_stats(filename_r)
     for it in tqdm(iter_range):
+        iter_profiler = cProfile.Profile()
+        iter_profiler.enable()
         print("Iteration: ", it, flush=True)
         initial_time = time()
 
@@ -482,6 +496,10 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         save_pickle(
             path=f"{args.directory}/problem_setup.pkl", item=master_problem_setup_dict
         )
+        
+        iter_profiler.disable()
+        filename_r = f"{profiling_dir}/iter_{it}_stats.{cal_comm.rank}"
+        iter_profiler.dump_stats(filename_r)
 
     master_df = pd.concat(dfs)
     master_df.to_csv(f"{args.directory}/performance.csv")
