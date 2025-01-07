@@ -171,7 +171,7 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         endpoints = design_space[endpoint_indices]
         
         knot_N = len(design_space)
-        print(knot_N)
+        print(f"k (not N) = {knot_N}", flush=True)
         alpha = [0, 0.25, 0.5]
         for i in range(num_polymorphs):
             # Generating energy  surfaces
@@ -274,7 +274,7 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         tol = 1e-3
         vertices = (min_curve - true_e_hull) < tol
         true_classifications = jnp.zeros(knot_N).at[vertices].set(1)
-        print("ON HULL", np.sum(true_classifications))
+        print(f"{np.sum(true_classifications)} points on hull", flush=True)
         ###Active search
         energies = {}
         scale = n_grid - 1
@@ -315,7 +315,7 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         iter_range = range(iterations)
 
     for it in tqdm(iter_range):
-        print("Iteration: ", it)
+        print("Iteration: ", it, flush=True)
         initial_time = time()
 
         # Quantifying error.

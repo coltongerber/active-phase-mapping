@@ -39,7 +39,8 @@ def do_parallel(
     start = rank * paths_per_proc
     rem = int(np.mod(num_paths, nprocs))
     print(
-        f"{num_paths} items to process\n{paths_per_proc} items per core (rank)\n{paths_per_proc+rem} items for final rank"
+        f"{num_paths} items to process\n{paths_per_proc} items per core (rank)\n{paths_per_proc+rem} items for final rank",
+        flush=True
     )
 
     # Add remaining tasks to final rank's tasks
@@ -49,11 +50,11 @@ def do_parallel(
 
     # Actually do the computations on each item in assigned section of designs
     data_dict = {}
-    print(f"rank {rank} starting at entry {start} and ending at {end-1}")
+    print(f"rank {rank} starting at entry {start} and ending at {end-1}", flush=True)
 
     # for a given composition
     if num_polymorphs == 1:
-        print("Using EIG_chaase_meanfield")
+        print("Using EIG_chaase_meanfield", flush=True)
         for composition in designs[start:end]:
             EIG = EIG_chaase_meanfield(
                 composition=composition,
@@ -75,7 +76,7 @@ def do_parallel(
             )
             data_dict[float(EIG)] = composition
     else:
-        print("Using EIG_chaase_meanfield_multi")
+        print("Using EIG_chaase_meanfield_multi", flush=True)
         for composition in designs[start:end]:
             EIG = EIG_chaase_meanfield_multi(
                 composition=composition,

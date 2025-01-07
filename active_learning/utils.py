@@ -214,22 +214,22 @@ def calc_expected_energy_or_entropy(
     entropy_type=None,
 ):
     if multi:
-        print("multi==True, using multi_GP_sample.")
+        print("multi==True, using multi_GP_sample.", flush=True)
         all_poly_samples = multi_GP_sample(poly_dict, design_space, num_curves)
-        print("multi_GP_sample complete.")
+        print("multi_GP_sample complete.", flush=True)
         for i in range(len(poly_dict)):
             all_poly_samples[i] += poly_dict[i]["mean"]
         samples = sample_min_curves(
             all_poly_samples, poly_dict, num_curves, num_samples
         )
-        print("sample_min_curves complete.")
+        print("sample_min_curves complete.", flush=True)
 
     else:
-        print("multi==False, using sample_from_posterior directly.")
+        print("multi==False, using sample_from_posterior directly.", flush=True)
         samples, _ = sample_from_posterior(
             pred_mean, pred_cov, design_space, num_samples, envelopes=False
         )
-        print("sample_from_posterior complete.")
+        print("sample_from_posterior complete.", flush=True)
     avg_pred = np.zeros(knot_N)
     hull_samples = []
     tol = 1e-3
@@ -538,7 +538,7 @@ def multi_GP_sample(poly_dict, design_space, num_curves):
             num_curves,
             envelopes=False,
         )
-        print(f"Polymorph {i} sampled.")
+        print(f"Polymorph {i} sampled.", flush=True)
         all_samples[i] = samples
     return all_samples
 
