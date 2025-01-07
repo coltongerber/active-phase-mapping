@@ -229,7 +229,9 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
             poly_dict[i]["remaining_design_choices"] = deepcopy(all_designs)
             poly_dict[i]["endpoint_indices"] = deepcopy(endpoint_indices)
             poly_dict[i]["random_designs"] = deepcopy(random_designs)
-            poly_dict[i]["selected_design_space"] = np.vstack([endpoints, random_designs])
+            # poly_dict[i]["selected_design_space"] = np.vstack([endpoints, random_designs])
+            poly_dict[i]["selected_design_space"] = design_space
+
             (
                 poly_dict[i]["pred_mean"],
                 poly_dict[i]["pred_cov"],
@@ -362,7 +364,8 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
                 index_dict=index_dict,
                 pred_mean=poly_dict[i]["pred_mean"],
                 pred_cov=poly_dict[i]["pred_cov"],
-                design_space=poly_dict[i]["selected_design_space"],
+                # design_space=poly_dict[i]["selected_design_space"],
+                design_space=design_space,
                 num_y=num_y,
                 initial_entropy=initial_entropy,
                 pts=pts,
@@ -432,7 +435,9 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
         
         random_designs = design_space[random_design_space_indices]
         poly_dict[max_polymorph]["random_designs"] = random_designs
-        poly_dict[max_polymorph]["selected_design_space"] = np.vstack([endpoints, random_designs])
+        # poly_dict[max_polymorph]["selected_design_space"] = np.vstack([endpoints, random_designs])
+        poly_dict[max_polymorph]["selected_design_space"] = design_space
+
 
         # Update model for next iteration
         (
