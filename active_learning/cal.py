@@ -28,7 +28,6 @@ from mpi import do_parallel
 import ipdb  # noqa F401
 import cProfile
 from mpi4py import MPI
-import os
 
 cal_comm = MPI.COMM_WORLD
 
@@ -323,7 +322,7 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
 
     setup_profiler.disable()
     profiling_dir = "profiling"
-    os.mkdir(profiling_dir)
+    system(f"mkdir {profiling_dir}")
     filename_r = f"{profiling_dir}/setup_stats.{cal_comm.rank}"
     setup_profiler.dump_stats(filename_r)
     for it in tqdm(iter_range):
