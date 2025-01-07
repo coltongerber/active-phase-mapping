@@ -427,13 +427,13 @@ for seed in range(args.seed_range[0], args.seed_range[1]):
             axis=0,
         )
         
-        random_design_space_indices = npr.choice(
-            poly_dict[max_polymorph]["remaining_design_choices"], 
+        random_remaining_design_choices_indices = npr.choice(
+            range(len(poly_dict[max_polymorph]["remaining_design_choices"])), 
             args.num_comps, 
             replace=False
         )
         
-        random_designs = design_space[random_design_space_indices]
+        random_designs = poly_dict[max_polymorph]["remaining_design_choices"][random_remaining_design_choices_indices]
         poly_dict[max_polymorph]["random_designs"] = random_designs
         # poly_dict[max_polymorph]["selected_design_space"] = np.vstack([endpoints, random_designs])
         poly_dict[max_polymorph]["selected_design_space"] = design_space
