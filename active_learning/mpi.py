@@ -49,10 +49,11 @@ def do_parallel(
 
     # Actually do the computations on each item in assigned section of designs
     data_dict = {}
-    print(f"Starting at entry {start} and ending at {end-1}")
+    print(f"rank {rank} starting at entry {start} and ending at {end-1}")
 
     # for a given composition
     if num_polymorphs == 1:
+        print("Using EIG_chaase_meanfield")
         for composition in designs[start:end]:
             EIG = EIG_chaase_meanfield(
                 composition=composition,
@@ -74,6 +75,7 @@ def do_parallel(
             )
             data_dict[float(EIG)] = composition
     else:
+        print("Using EIG_chaase_meanfield_multi")
         for composition in designs[start:end]:
             EIG = EIG_chaase_meanfield_multi(
                 composition=composition,

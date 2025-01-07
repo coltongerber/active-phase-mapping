@@ -214,17 +214,22 @@ def calc_expected_energy_or_entropy(
     entropy_type=None,
 ):
     if multi:
+        print("multi==True, using multi_GP_sample.")
         all_poly_samples = multi_GP_sample(poly_dict, design_space, num_curves)
+        print("multi_GP_sample complete.")
         for i in range(len(poly_dict)):
             all_poly_samples[i] += poly_dict[i]["mean"]
         samples = sample_min_curves(
             all_poly_samples, poly_dict, num_curves, num_samples
         )
+        print("sample_min_curves complete.")
 
     else:
+        print("multi==False, using sample_from_posterior directly.")
         samples, _ = sample_from_posterior(
             pred_mean, pred_cov, design_space, num_samples, envelopes=False
         )
+        print("sample_from_posterior complete.")
     avg_pred = np.zeros(knot_N)
     hull_samples = []
     tol = 1e-3
@@ -244,6 +249,7 @@ def calc_expected_energy_or_entropy(
                 )
                 + lin_comb
             )
+            print("get_hull_energies complete.")
             vertices = Y - E_hull < tol
             classifications = jnp.zeros(knot_N).at[vertices].set(1)
         except:  # noqa E722. Presumably this is for when QHull fails? TODO: Should be more specific.
@@ -533,6 +539,7 @@ def multi_GP_sample(poly_dict, design_space, num_curves):
             num_curves,
             envelopes=False,
         )
+        print(f"Polymorph {i} sampled.")
         all_samples[i] = samples
     return all_samples
 
