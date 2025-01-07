@@ -249,7 +249,6 @@ def calc_expected_energy_or_entropy(
                 )
                 + lin_comb
             )
-            print("get_hull_energies complete.")
             vertices = Y - E_hull < tol
             classifications = jnp.zeros(knot_N).at[vertices].set(1)
         except:  # noqa E722. Presumably this is for when QHull fails? TODO: Should be more specific.
